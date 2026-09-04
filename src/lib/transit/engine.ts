@@ -407,13 +407,16 @@ function toJourney(graph: Graph, path: Label[], origin: Place, destination: Plac
         boardStop: stop,
         alightStop: stop,
         stops: [stop],
+        hops: [],
         minutes: 0,
         fare: graph.fares.get(route.id) ?? 0,
         colorIndex: colorByRoute.get(a.routeId)!,
       };
     } else if (a.type === "ride" && currentBus) {
       const stop = graph.stops.get(a.toStopId)!;
+      const prev = graph.stops.get(a.fromStopId)!;
       currentBus.stops.push(stop);
+      currentBus.hops.push({ fromStopId: a.fromStopId, toStopId: a.toStopId, minutes: a.minutes, meters: Math.round(haversineMeters(toLL(prev), toLL(stop))) });
       currentBus.alightStop = stop;
       currentBus.minutes += a.minutes;
     }

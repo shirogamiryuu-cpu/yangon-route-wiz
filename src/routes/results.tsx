@@ -3,7 +3,8 @@ import { createFileRoute, Link, ClientOnly } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { BusFront, ChevronLeft, Clock, Coins, Footprints, Repeat, SlidersHorizontal } from "lucide-react";
-import { computeRoutes } from "@/lib/transit/transit.functions";
+import { planJourney } from "@/lib/ai/ai.functions";
+import { AIRecommendationCard } from "@/components/transit/AIRecommendationCard";
 import { badgesAcross } from "@/lib/transit/engine";
 import { PREFERENCES, type Preference } from "@/lib/transit/types";
 import { JourneyCard } from "@/components/transit/JourneyCard";
@@ -27,9 +28,9 @@ type SearchParams = z.infer<typeof searchSchema>;
 
 const routesQuery = (s: SearchParams) =>
   queryOptions({
-    queryKey: ["routes", s],
+    queryKey: ["plan", s],
     queryFn: () =>
-      computeRoutes({
+      planJourney({
         data: {
           origin: { name: s.from, lat: s.fromLat, lng: s.fromLng, kind: "place" },
           destination: { name: s.to, lat: s.toLat, lng: s.toLng, kind: "place" },
@@ -130,9 +131,10 @@ function ResultsPage() {
 
 function Results({ search }: { search: SearchParams }) {
   const { data } = useSuspenseQuery(routesQuery(search));
-  const [selectedId, setSelectedId] = useState(data.journeys[0]?.id ?? "");
+  const initialId = data.ai.best?.journeyId ?? data.journeys[0]?.id ?? "";
+  const [selectedId, setSelectedId] = useState(initialId);
   const [editing, setEditing] = useState(false);
-  useEffect(() => setSelectedId(data.journeys[0]?.id ?? ""), [data]);
+  useEffect(() => setSelectedId(data.ai.best?.journeyId ?? data.journeys[0]?.id ?? ""), [data]);
   const selected = data.journeys.find((j) => j.id === selectedId) ?? data.journeys[0];
   const badges = badgesAcross(data.journeys);
   const prefLabel = PREFERENCES.find((p) => p.id === data.preference)?.label;
@@ -216,8 +218,16 @@ function Results({ search }: { search: SearchParams }) {
               </div>
             ) : (
               <>
+                <AIRecommendationCard
+                  ai={data.ai}
+                  journeys={data.journeys}
+                  selectedId={selected?.id ?? ""}
+                  onSelect={setSelectedId}
+                  timeLabel={`Yangon ${data.timeContext.label}`}
+                  currency={data.network.currency}
+                />
                 <div className="flex items-end justify-between">
-                  <h1 className="font-display text-xl font-bold">Top {data.journeys.length} routes</h1>
+                  <h1 className="font-display text-xl font-bold">Valid routes from the engine</h1>
                   <span className="text-xs text-muted-foreground">Optimised: {prefLabel}</span>
                 </div>
                 <div className="space-y-3">
@@ -229,6 +239,8 @@ function Results({ search }: { search: SearchParams }) {
                       badges={badges.get(j.id) ?? []}
                       selected={j.id === selected?.id}
                       currency={data.network.currency}
+                      aiScore={data.ai.ranked.find((r) => r.journeyId === j.id)?.score}
+                      predictedMinutes={data.ai.ranked.find((r) => r.journeyId === j.id)?.prediction.predictedTotalMinutes}
                       onSelect={() => setSelectedId(j.id)}
                     />
                   ))}

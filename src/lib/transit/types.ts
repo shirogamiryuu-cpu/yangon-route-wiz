@@ -94,6 +94,8 @@ export interface BusLeg {
   alightStop: BusStop;
   /** Every stop passed, board → alight inclusive */
   stops: BusStop[];
+  /** Stop-to-stop hops with the historical (travel_data) minutes used by the engine */
+  hops: { fromStopId: string; toStopId: string; minutes: number; meters: number }[];
   minutes: number;
   fare: number;
   /** Colour index for map/legend */
