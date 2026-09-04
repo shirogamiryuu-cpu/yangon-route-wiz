@@ -50,7 +50,18 @@ export interface TransitNetwork {
   travelData: TravelData[];
   fares: Fare[];
   /** Human-readable label describing where the data came from. */
-  source: { label: string; isDemo: boolean; currency: string };
+  source: TransitSource;
+}
+
+export interface TransitSource {
+  label: string;
+  isDemo: boolean;
+  currency: string;
+  /** Dataset credit / licence line */
+  attribution?: string | undefined;
+  attributionUrl?: string | undefined;
+  /** Caveats shown to the user (e.g. estimated fares or travel times) */
+  notes?: string[] | undefined;
 }
 
 export type Preference = "recommended" | "fastest" | "least_walking" | "fewest_transfers" | "cheapest";
