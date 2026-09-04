@@ -92,10 +92,11 @@ export function networkFromCsv(files: {
   };
 }
 
-let activeSource: TransitDataSource = demoDataSource;
+let activeSource: TransitDataSource | null = null;
 
+/** Active source — defaults to the bundled YBS CSV dataset. */
 export function getDataSource(): TransitDataSource {
-  return activeSource;
+  return activeSource ?? ybsDataSource;
 }
 
 export function setDataSource(source: TransitDataSource) {
