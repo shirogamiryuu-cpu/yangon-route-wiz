@@ -73,7 +73,14 @@ export function JourneyCard({ journey, rank, badges, selected, currency, onSelec
         <Footprints className="size-3.5 text-walk" />
       </div>
 
+      <p className="mt-1.5 truncate text-xs text-muted-foreground">
+        {buses
+          .flatMap((b, i) => (b.kind === "bus" ? [b.boardStop.name, ...(i === buses.length - 1 ? [b.alightStop.name] : [])] : []))
+          .join(" → ")}
+      </p>
+
       <dl className="mt-3 grid grid-cols-4 gap-2 border-t pt-3 text-xs">
+
         <Stat icon={Footprints} label="Walk" value={`${journey.walkMeters} m`} />
         <Stat icon={BusFront} label="Buses" value={String(journey.busCount)} />
         <Stat icon={Repeat} label="Transfers" value={String(journey.transferCount)} />
