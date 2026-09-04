@@ -73,7 +73,7 @@ function Index() {
       </section>
 
       <footer className="mx-auto max-w-6xl px-5 py-8 text-xs text-muted-foreground">
-        Map data © OpenStreetMap contributors. Transit data shown is a labelled demo dataset.
+        Map data © OpenStreetMap contributors. Bus network: YBS open data (CC BY-SA 4.0) — travel times and fares are estimates.
       </footer>
     </main>
   );

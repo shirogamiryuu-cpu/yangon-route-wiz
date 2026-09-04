@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { findRoutes } from "./engine";
 import { getDataSource } from "./data-source";
-import { DEMO_PLACES } from "./demo-data";
+import { LANDMARKS } from "./landmarks";
 import type { Place, RouteResponse } from "./types";
 
 const placeSchema = z.object({
@@ -32,7 +32,7 @@ export const computeRoutes = createServerFn({ method: "POST" })
 // Yangon bounding box for geocoding
 const YANGON_VIEWBOX = "96.02,16.98,96.30,16.70";
 
-/** Location search: network stops + demo landmarks + OpenStreetMap (Nominatim), bounded to Yangon. */
+/** Location search: network stops + landmarks + OpenStreetMap (Nominatim), bounded to Yangon. */
 export const searchPlaces = createServerFn({ method: "GET" })
   .inputValidator((input) => z.object({ q: z.string().max(120) }).parse(input))
   .handler(async ({ data }): Promise<Place[]> => {
@@ -44,7 +44,7 @@ export const searchPlaces = createServerFn({ method: "GET" })
       ...network.stops
         .filter((s) => s.name.toLowerCase().includes(q))
         .map<Place>((s) => ({ name: s.name, lat: s.latitude, lng: s.longitude, kind: "stop", detail: "Bus stop" })),
-      ...DEMO_PLACES.filter((p) => p.name.toLowerCase().includes(q)).map<Place>((p) => ({
+      ...LANDMARKS.filter((p) => p.name.toLowerCase().includes(q)).map<Place>((p) => ({
         name: p.name,
         lat: p.lat,
         lng: p.lng,
@@ -63,7 +63,7 @@ export const searchPlaces = createServerFn({ method: "GET" })
       url.searchParams.set("bounded", "1");
       url.searchParams.set("countrycodes", "mm");
       const res = await fetch(url, {
-        headers: { "User-Agent": "TransitAI-Yangon/0.1 (demo route finder)", "Accept-Language": "en" },
+        headers: { "User-Agent": "TransitAI-Yangon/0.1 (route finder)", "Accept-Language": "en" },
         signal: AbortSignal.timeout(3500),
       });
       if (res.ok) {

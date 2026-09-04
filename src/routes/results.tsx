@@ -196,7 +196,7 @@ function Results({ search }: { search: SearchParams }) {
           </ClientOnly>
           {data.network.isDemo && (
             <div className="pointer-events-none absolute top-3 left-3 z-[400] rounded-md bg-ink/85 px-2 py-1 text-[11px] font-semibold text-ink-foreground">
-              DEMO DATA · fictional routes
+              DEMO DATA
             </div>
           )}
         </div>
