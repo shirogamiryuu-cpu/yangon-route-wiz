@@ -71,6 +71,24 @@ export interface Graph {
   footTransfers: Map<string, { toStopId: string; meters: number }[]>;
 }
 
+/** Graphs are pure functions of (network, time bucket), so cache them per network instance. */
+const graphCache = new WeakMap<TransitNetwork, Map<string, Graph>>();
+
+export function getGraph(network: TransitNetwork, timeOfDay = "all", dayOfWeek = "all"): Graph {
+  let byKey = graphCache.get(network);
+  if (!byKey) {
+    byKey = new Map();
+    graphCache.set(network, byKey);
+  }
+  const k = `${timeOfDay}|${dayOfWeek}`;
+  let g = byKey.get(k);
+  if (!g) {
+    g = buildGraph(network, timeOfDay, dayOfWeek);
+    byKey.set(k, g);
+  }
+  return g;
+}
+
 export function buildGraph(network: TransitNetwork, timeOfDay = "all", dayOfWeek = "all"): Graph {
   const stops = new Map(network.stops.map((s) => [s.id, s]));
   const routes = new Map(network.routes.map((r) => [r.id, r]));
