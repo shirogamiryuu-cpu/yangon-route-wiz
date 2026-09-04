@@ -17,10 +17,12 @@ interface Props {
   badges: string[];
   selected: boolean;
   currency: string;
+  aiScore?: number | undefined;
+  predictedMinutes?: number | undefined;
   onSelect: () => void;
 }
 
-export function JourneyCard({ journey, rank, badges, selected, currency, onSelect }: Props) {
+export function JourneyCard({ journey, rank, badges, selected, currency, aiScore, predictedMinutes, onSelect }: Props) {
   const buses = journey.legs.filter((l) => l.kind === "bus");
   return (
     <button
@@ -52,9 +54,14 @@ export function JourneyCard({ journey, rank, badges, selected, currency, onSelec
         </div>
         <div className="text-right">
           <div className="font-display text-2xl leading-none font-bold">
-            {journey.totalMinutes}
+            {predictedMinutes ?? journey.totalMinutes}
             <span className="ml-0.5 text-sm font-semibold text-muted-foreground">min</span>
           </div>
+          {aiScore !== undefined && (
+            <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-ink px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-foreground">
+              AI {aiScore}
+            </div>
+          )}
         </div>
       </div>
 
