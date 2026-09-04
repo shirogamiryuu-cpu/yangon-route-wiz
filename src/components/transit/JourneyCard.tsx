@@ -62,6 +62,9 @@ export function JourneyCard({ journey, rank, badges, selected, currency, aiScore
               AI {aiScore}
             </div>
           )}
+          {predictedMinutes !== undefined && predictedMinutes !== journey.totalMinutes && (
+            <div className="mt-0.5 text-[10px] text-muted-foreground">predicted · {journey.totalMinutes} min historical</div>
+          )}
         </div>
       </div>
 
