@@ -218,9 +218,7 @@ function Results({ search }: { search: SearchParams }) {
               <>
                 <div className="flex items-end justify-between">
                   <h1 className="font-display text-xl font-bold">Top {data.journeys.length} routes</h1>
-                  <span className="text-xs text-muted-foreground">
-                    {prefLabel} · {data.computedInMs} ms
-                  </span>
+                  <span className="text-xs text-muted-foreground">Optimised: {prefLabel}</span>
                 </div>
                 <div className="space-y-3">
                   {data.journeys.map((j, i) => (
