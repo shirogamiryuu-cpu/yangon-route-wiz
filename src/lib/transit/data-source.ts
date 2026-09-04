@@ -1,32 +1,50 @@
 /**
  * Data-source abstraction. The route engine only ever sees a TransitNetwork,
- * so swapping the demo dataset for a Supabase-backed or CSV-backed source
- * requires no engine changes.
+ * so swapping the CSV dataset for a Supabase-backed source requires no
+ * engine changes.
  *
  * To connect a database: implement `TransitDataSource.loadNetwork()` by
  * selecting from bus_stops, bus_routes, route_stops, travel_data and fares
- * (see supabase/schema.sql) and return `getDataSource()` accordingly.
+ * (see supabase/schema.sql) and call `setDataSource()` accordingly.
  */
 import type { TransitNetwork } from "./types";
-import { DEMO_NETWORK } from "./demo-data";
+import { ybsDataSource } from "./ybs-source";
 
 export interface TransitDataSource {
   loadNetwork(): Promise<TransitNetwork>;
 }
 
-export const demoDataSource: TransitDataSource = {
-  async loadNetwork() {
-    return DEMO_NETWORK;
-  },
-};
+/** Splits one CSV line, honouring double-quoted cells ("" = literal quote). */
+function splitCsvLine(line: string): string[] {
+  const cells: string[] = [];
+  let cur = "";
+  let quoted = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i]!;
+    if (quoted) {
+      if (ch === '"') {
+        if (line[i + 1] === '"') {
+          cur += '"';
+          i++;
+        } else quoted = false;
+      } else cur += ch;
+    } else if (ch === '"') quoted = true;
+    else if (ch === ",") {
+      cells.push(cur);
+      cur = "";
+    } else cur += ch;
+  }
+  cells.push(cur);
+  return cells.map((c) => c.trim());
+}
 
 /** Parses CSV text (header row required) into row objects. Used for imports. */
 export function parseCsv(text: string): Record<string, string>[] {
   const lines = text.trim().split(/\r?\n/);
   if (lines.length < 2) return [];
-  const headers = (lines[0] ?? "").split(",").map((h) => h.trim());
+  const headers = splitCsvLine(lines[0] ?? "");
   return lines.slice(1).map((line) => {
-    const cells = line.split(",").map((c) => c.trim());
+    const cells = splitCsvLine(line);
     return Object.fromEntries(headers.map((h, i) => [h, cells[i] ?? ""]));
   });
 }
@@ -75,10 +93,11 @@ export function networkFromCsv(files: {
   };
 }
 
-let activeSource: TransitDataSource = demoDataSource;
+let activeSource: TransitDataSource | null = null;
 
+/** Active source — defaults to the bundled YBS CSV dataset. */
 export function getDataSource(): TransitDataSource {
-  return activeSource;
+  return activeSource ?? ybsDataSource;
 }
 
 export function setDataSource(source: TransitDataSource) {

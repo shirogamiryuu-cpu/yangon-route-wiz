@@ -71,6 +71,24 @@ export interface Graph {
   footTransfers: Map<string, { toStopId: string; meters: number }[]>;
 }
 
+/** Graphs are pure functions of (network, time bucket), so cache them per network instance. */
+const graphCache = new WeakMap<TransitNetwork, Map<string, Graph>>();
+
+export function getGraph(network: TransitNetwork, timeOfDay = "all", dayOfWeek = "all"): Graph {
+  let byKey = graphCache.get(network);
+  if (!byKey) {
+    byKey = new Map();
+    graphCache.set(network, byKey);
+  }
+  const k = `${timeOfDay}|${dayOfWeek}`;
+  let g = byKey.get(k);
+  if (!g) {
+    g = buildGraph(network, timeOfDay, dayOfWeek);
+    byKey.set(k, g);
+  }
+  return g;
+}
+
 export function buildGraph(network: TransitNetwork, timeOfDay = "all", dayOfWeek = "all"): Graph {
   const stops = new Map(network.stops.map((s) => [s.id, s]));
   const routes = new Map(network.routes.map((r) => [r.id, r]));
@@ -131,14 +149,25 @@ export function buildGraph(network: TransitNetwork, timeOfDay = "all", dayOfWeek
     ride.set(routeId, adj);
   }
 
+  // Foot transfers via a coarse lat/lng grid so large networks stay fast (no O(n²) scan).
   const footTransfers = new Map<string, { toStopId: string; meters: number }[]>();
-  const all = network.stops;
+  const all = network.stops.filter((s) => servedBy.has(s.id));
+  const cellDeg = MAX_TRANSFER_WALK_M / 111_000; // ~1 cell = max transfer distance
+  const cellOf = (s: BusStop) => `${Math.floor(s.latitude / cellDeg)}|${Math.floor(s.longitude / cellDeg)}`;
+  const grid = new Map<string, BusStop[]>();
+  for (const s of all) grid.set(cellOf(s), [...(grid.get(cellOf(s)) ?? []), s]);
   for (const a of all) {
     const near: { toStopId: string; meters: number }[] = [];
-    for (const b of all) {
-      if (a.id === b.id) continue;
-      const m = haversineMeters(toLL(a), toLL(b));
-      if (m <= MAX_TRANSFER_WALK_M) near.push({ toStopId: b.id, meters: m });
+    const cy = Math.floor(a.latitude / cellDeg);
+    const cx = Math.floor(a.longitude / cellDeg);
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        for (const b of grid.get(`${cy + dy}|${cx + dx}`) ?? []) {
+          if (a.id === b.id) continue;
+          const m = haversineMeters(toLL(a), toLL(b));
+          if (m <= MAX_TRANSFER_WALK_M) near.push({ toStopId: b.id, meters: m });
+        }
+      }
     }
     footTransfers.set(a.id, near);
   }
@@ -465,7 +494,7 @@ function scoreFor(j: Journey, w: Weights) {
 
 export function findRoutes(network: TransitNetwork, req: RouteRequest): RouteResponse {
   const t0 = Date.now();
-  const graph = buildGraph(network, req.timeOfDay ?? "all", req.dayOfWeek ?? "all");
+  const graph = getGraph(network, req.timeOfDay ?? "all", req.dayOfWeek ?? "all");
   const originStops = nearbyStops(graph, req.origin);
   const destStops = nearbyStops(graph, req.destination);
   const pool = new Map<string, Journey>();

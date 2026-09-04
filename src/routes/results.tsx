@@ -196,7 +196,7 @@ function Results({ search }: { search: SearchParams }) {
           </ClientOnly>
           {data.network.isDemo && (
             <div className="pointer-events-none absolute top-3 left-3 z-[400] rounded-md bg-ink/85 px-2 py-1 text-[11px] font-semibold text-ink-foreground">
-              DEMO DATA · fictional routes
+              DEMO DATA
             </div>
           )}
         </div>
@@ -204,7 +204,7 @@ function Results({ search }: { search: SearchParams }) {
         {/* Side panel */}
         <aside className="flex min-h-0 flex-1 flex-col overflow-y-auto border-t bg-background lg:order-1 lg:w-[440px] lg:flex-none lg:border-t-0 lg:border-r xl:w-[480px]">
           <div className="space-y-4 p-4">
-            <DemoBanner />
+            <DemoBanner source={data.network} />
             {data.journeys.length === 0 ? (
               <div className="rounded-2xl border bg-card p-6 text-center">
                 <h2 className="font-display text-lg font-bold">No bus connection found</h2>

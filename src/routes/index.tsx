@@ -56,7 +56,7 @@ function Index() {
 
         <div className="animate-rise rounded-3xl border bg-card/90 p-5 shadow-float backdrop-blur md:p-7" style={{ animationDelay: "120ms" }}>
           <h2 className="font-display text-xl font-bold">Plan a journey</h2>
-          <p className="mb-5 text-sm text-muted-foreground">Try “Hledan” to “Botahtaung Pagoda”.</p>
+          <p className="mb-5 text-sm text-muted-foreground">Try “Hledan” to “Sule Pagoda”.</p>
           <SearchForm />
           <div className="mt-5">
             <DemoBanner />
@@ -73,7 +73,7 @@ function Index() {
       </section>
 
       <footer className="mx-auto max-w-6xl px-5 py-8 text-xs text-muted-foreground">
-        Map data © OpenStreetMap contributors. Transit data shown is a labelled demo dataset.
+        Map data © OpenStreetMap contributors. Bus network: YBS open data (CC BY-SA 4.0) — travel times and fares are estimates.
       </footer>
     </main>
   );
