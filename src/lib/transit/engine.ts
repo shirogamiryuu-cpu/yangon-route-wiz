@@ -494,7 +494,7 @@ function scoreFor(j: Journey, w: Weights) {
 
 export function findRoutes(network: TransitNetwork, req: RouteRequest): RouteResponse {
   const t0 = Date.now();
-  const graph = buildGraph(network, req.timeOfDay ?? "all", req.dayOfWeek ?? "all");
+  const graph = getGraph(network, req.timeOfDay ?? "all", req.dayOfWeek ?? "all");
   const originStops = nearbyStops(graph, req.origin);
   const destStops = nearbyStops(graph, req.destination);
   const pool = new Map<string, Journey>();
