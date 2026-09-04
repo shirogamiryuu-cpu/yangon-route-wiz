@@ -8,6 +8,7 @@
  * (see supabase/schema.sql) and call `setDataSource()` accordingly.
  */
 import type { TransitNetwork } from "./types";
+import { ybsDataSource } from "./ybs-source";
 
 export interface TransitDataSource {
   loadNetwork(): Promise<TransitNetwork>;
