@@ -105,6 +105,7 @@ export function StopPickerDialog({ open, title, accent, onClose, onPick }: Props
           </button>
         </footer>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
