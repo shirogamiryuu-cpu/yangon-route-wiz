@@ -3,7 +3,7 @@ import { z } from "zod";
 import { findRoutes } from "./engine";
 import { getDataSource } from "./data-source";
 import { LANDMARKS } from "./landmarks";
-import type { Place, RouteResponse } from "./types";
+import type { BusStop, Place, RouteResponse } from "./types";
 
 const placeSchema = z.object({
   name: z.string().min(1),
@@ -28,6 +28,12 @@ export const computeRoutes = createServerFn({ method: "POST" })
     const network = await getDataSource().loadNetwork();
     return findRoutes(network, data);
   });
+
+/** All bus stops in the network — used by the "choose from map" picker. */
+export const listStops = createServerFn({ method: "GET" }).handler(async (): Promise<BusStop[]> => {
+  const network = await getDataSource().loadNetwork();
+  return network.stops.map((s) => ({ id: s.id, name: s.name, latitude: s.latitude, longitude: s.longitude }));
+});
 
 // Yangon bounding box for geocoding
 const YANGON_VIEWBOX = "96.02,16.98,96.30,16.70";
