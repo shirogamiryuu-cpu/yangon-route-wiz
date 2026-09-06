@@ -34,9 +34,9 @@ export function StopPickerDialog({ open, title, accent, onClose, onPick }: Props
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-ink/60 p-3 backdrop-blur-sm" onMouseDown={onClose}>
       <div
         role="dialog"
