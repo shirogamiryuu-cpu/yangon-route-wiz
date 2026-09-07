@@ -29,6 +29,13 @@ async function getPl() {
     }
     const mod: any = await import("tau-prolog");
     pl = mod.default ?? mod;
+    // The bundle is detected as "node", but only the browser streams exist here.
+    const g = globalThis as any;
+    g.nodejs_arguments = g.nodejs_arguments ?? [];
+    g.nodejs_file_system = g.nodejs_file_system ?? g.tau_file_system;
+    g.nodejs_user_input = g.nodejs_user_input ?? g.tau_user_input;
+    g.nodejs_user_output = g.nodejs_user_output ?? g.tau_user_output;
+    g.nodejs_user_error = g.nodejs_user_error ?? g.tau_user_error;
   }
   return pl;
 }
