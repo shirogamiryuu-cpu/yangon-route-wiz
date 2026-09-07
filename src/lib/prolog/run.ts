@@ -11,7 +11,14 @@ export interface PrologResult {
 let pl: any = null;
 
 async function getPl() {
-  if (!pl) pl = (await import("tau-prolog")).default ?? (await import("tau-prolog"));
+  if (!pl) {
+    // Tau-Prolog assigns its browser virtual file system to an implicit global,
+    // which fails under ESM strict mode unless the binding already exists.
+    if (!("tau_file_system" in globalThis)) (globalThis as any).tau_file_system = undefined;
+    if (!("nodejs_file_system" in globalThis)) (globalThis as any).nodejs_file_system = undefined;
+    const mod: any = await import("tau-prolog");
+    pl = mod.default ?? mod;
+  }
   return pl;
 }
 
