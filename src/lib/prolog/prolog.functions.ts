@@ -4,7 +4,7 @@ import { getDataSource } from "@/lib/transit/data-source";
 import { buildKnowledgeBase } from "./knowledge-base";
 
 /** Bus numbers offered in the Prolog demo (kept small so the program loads instantly). */
-export const DEFAULT_BUS_NUMBERS = ["36", "37", "43"];
+export const DEFAULT_BUS_NUMBERS = ["21", "41", "65A"];
 
 /** All bus numbers available in the dataset, for the picker. */
 export const listBusNumbers = createServerFn({ method: "GET" }).handler(async (): Promise<string[]> => {

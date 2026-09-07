@@ -27,11 +27,11 @@ export const Route = createFileRoute("/prolog")({
 
 const EXAMPLES: { label: string; goal: string; note: string }[] = [
   { label: "Buses in the knowledge base", goal: "bus(N, Name)", note: "Every bus loaded, with its route name." },
-  { label: "Stops served by a bus", goal: "serves('36', Stop)", note: "All stops one bus calls at." },
+  { label: "Stops served by a bus", goal: "serves('41', Stop)", note: "All stops one bus calls at." },
   { label: "Which buses serve a stop?", goal: "serves(Bus, 'Hledan')", note: "Reverse lookup by stop name." },
-  { label: "Consecutive stops", goal: "next_stop('36', From, To)", note: "Stop-by-stop order along the route." },
-  { label: "Interchange points", goal: "interchange(Stop, '36', Bus2)", note: "Stops where you can change buses." },
-  { label: "One-transfer journeys", goal: "one_transfer('Hledan', 'Sule Pagoda', B1, Change, B2)", note: "Two buses with a change stop." },
+  { label: "Consecutive stops", goal: "next_stop('41', From, To)", note: "Stop-by-stop order along the route." },
+  { label: "Interchange points", goal: "interchange(Stop, '41', Bus2)", note: "Stops where you can change buses." },
+  { label: "One-transfer journeys", goal: "one_transfer('Hledan', 'Botahtaung Paya', B1, Change, B2)", note: "Two buses with a change stop." },
   { label: "Fare for 2 buses", goal: "trip_fare(2, Total)", note: "Assumed 200 MMK flat fare per boarding." },
 ];
 
