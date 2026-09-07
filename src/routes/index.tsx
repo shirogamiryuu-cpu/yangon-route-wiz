@@ -28,7 +28,15 @@ function Index() {
           </span>
           TransitAI
         </Link>
-        <span className="rounded-full border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">Yangon · MVP</span>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/prolog"
+            className="rounded-full border bg-card px-3 py-1 text-xs font-semibold text-primary transition hover:bg-accent"
+          >
+            Prolog Logic Lab
+          </Link>
+          <span className="rounded-full border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">Yangon · MVP</span>
+        </div>
       </header>
 
       <section className="mx-auto grid max-w-6xl gap-10 px-5 pt-8 pb-16 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:pt-16">
