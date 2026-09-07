@@ -27,6 +27,9 @@ async function getPl() {
     ]) {
       if (!(g in globalThis)) (globalThis as any)[g] = undefined;
     }
+    // Force the library's browser code path (a bundler shim can make it look like Node).
+    const proc = (globalThis as any).process;
+    if (proc && typeof proc === "object" && !Array.isArray(proc.argv)) proc.browser = true;
     const mod: any = await import("tau-prolog");
     pl = mod.default ?? mod;
     // The bundle is detected as "node", but only the browser streams exist here.
