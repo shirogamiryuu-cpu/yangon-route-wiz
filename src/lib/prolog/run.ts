@@ -14,7 +14,17 @@ async function getPl() {
   if (!pl) {
     // Tau-Prolog assigns its browser streams/file system to implicit globals,
     // which fails under ESM strict mode unless the bindings already exist.
-    for (const g of ["tau_file_system", "nodejs_file_system", "tau_user_input", "tau_user_output", "tau_user_error"]) {
+    for (const g of [
+      "tau_file_system",
+      "tau_user_input",
+      "tau_user_output",
+      "tau_user_error",
+      "nodejs_file_system",
+      "nodejs_user_input",
+      "nodejs_user_output",
+      "nodejs_user_error",
+      "nodejs_arguments",
+    ]) {
       if (!(g in globalThis)) (globalThis as any)[g] = undefined;
     }
     const mod: any = await import("tau-prolog");
