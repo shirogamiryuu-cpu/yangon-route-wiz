@@ -12,10 +12,11 @@ let pl: any = null;
 
 async function getPl() {
   if (!pl) {
-    // Tau-Prolog assigns its browser virtual file system to an implicit global,
-    // which fails under ESM strict mode unless the binding already exists.
-    if (!("tau_file_system" in globalThis)) (globalThis as any).tau_file_system = undefined;
-    if (!("nodejs_file_system" in globalThis)) (globalThis as any).nodejs_file_system = undefined;
+    // Tau-Prolog assigns its browser streams/file system to implicit globals,
+    // which fails under ESM strict mode unless the bindings already exist.
+    for (const g of ["tau_file_system", "nodejs_file_system", "tau_user_input", "tau_user_output", "tau_user_error"]) {
+      if (!(g in globalThis)) (globalThis as any)[g] = undefined;
+    }
     const mod: any = await import("tau-prolog");
     pl = mod.default ?? mod;
   }
