@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DemandRouteImport } from './routes/demand'
 import { Route as PrologRouteImport } from './routes/prolog'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as ApiMlTrainingDataRouteImport } from './routes/api/ml/training-data'
@@ -17,6 +18,11 @@ import { Route as ApiMlTrainingDataRouteImport } from './routes/api/ml/training-
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemandRoute = DemandRouteImport.update({
+  id: '/demand',
+  path: '/demand',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrologRoute = PrologRouteImport.update({
@@ -37,12 +43,14 @@ const ApiMlTrainingDataRoute = ApiMlTrainingDataRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/demand': typeof DemandRoute
   '/prolog': typeof PrologRoute
   '/results': typeof ResultsRoute
   '/api/ml/training-data': typeof ApiMlTrainingDataRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/demand': typeof DemandRoute
   '/prolog': typeof PrologRoute
   '/results': typeof ResultsRoute
   '/api/ml/training-data': typeof ApiMlTrainingDataRoute
@@ -50,20 +58,28 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/demand': typeof DemandRoute
   '/prolog': typeof PrologRoute
   '/results': typeof ResultsRoute
   '/api/ml/training-data': typeof ApiMlTrainingDataRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/prolog' | '/results' | '/api/ml/training-data'
+  fullPaths: '/' | '/demand' | '/prolog' | '/results' | '/api/ml/training-data'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/prolog' | '/results' | '/api/ml/training-data'
-  id: '__root__' | '/' | '/prolog' | '/results' | '/api/ml/training-data'
+  to: '/' | '/demand' | '/prolog' | '/results' | '/api/ml/training-data'
+  id:
+    | '__root__'
+    | '/'
+    | '/demand'
+    | '/prolog'
+    | '/results'
+    | '/api/ml/training-data'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DemandRoute: typeof DemandRoute
   PrologRoute: typeof PrologRoute
   ResultsRoute: typeof ResultsRoute
   ApiMlTrainingDataRoute: typeof ApiMlTrainingDataRoute
@@ -76,6 +92,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demand': {
+      id: '/demand'
+      path: '/demand'
+      fullPath: '/demand'
+      preLoaderRoute: typeof DemandRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/prolog': {
@@ -104,6 +127,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DemandRoute: DemandRoute,
   PrologRoute: PrologRoute,
   ResultsRoute: ResultsRoute,
   ApiMlTrainingDataRoute: ApiMlTrainingDataRoute,
