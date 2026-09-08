@@ -313,7 +313,7 @@ function Stat({
   label: string;
   value: string;
   sub: string;
-  tone?: string;
+  tone?: string | undefined;
 }) {
   return (
     <div className="rounded-2xl border bg-card p-4 shadow-card">
